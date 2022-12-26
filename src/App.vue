@@ -1,11 +1,21 @@
 <script setup lang="ts">
-import Table from "./components/Table.vue";
+import mockData from './mocks/mock.json';
+import DataTable from './components/DataTable.vue';
+import { TableHeader, TableData } from './components/types';
+
+const tableHeaderFields: TableHeader[] = [
+  { id: 'name', label: 'Project name', sortable: true },
+  { id: 'status', label: 'Status' },
+  { id: 'createdAt', label: 'Created At' },
+  { id: 'price', label: 'Price' },
+  { id: 'isContinuous', label: 'is Continuous' },
+];
 </script>
 
 <template>
   <div>
     <h1>Table component</h1>
-    <Table />
+    <Data-table :header-fields="tableHeaderFields" :table-data="mockData" />
   </div>
 </template>
 

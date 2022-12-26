@@ -5,17 +5,13 @@
     <table>
       <thead>
         <tr>
-          <th
-            v-for="field in tableFields"
-            :key="field.id"
-            @click="sortTableByColumn(field)"
-          >
+          <th v-for="field in props.headerFields" :key="field.id" @click="sortTableByColumn(field)">
             {{ field.label }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in sortedTableData" :key="item.name">
+        <tr v-for="(item, index) in sortedTableData" :key="index">
           <td v-for="field in test(item)" :key="field">{{ field }}</td>
           <!-- <td v-for="field in test(item)" :key="field">{{ field }}</td> -->
         </tr>
@@ -25,15 +21,22 @@
 </template>
 
 <script setup lang="ts">
-import mockData from "./../mocks/mock.json";
-import { computed, ref } from "vue";
+import { TableData, TableHeader } from './types';
+import { computed, ref, defineProps } from 'vue';
 
-const tableData = ref(mockData);
+const props = defineProps<{
+  headerFields: TableHeader[];
+  tableData: TableData[];
+}>();
+
+const tableData = ref(props.tableData);
 const sort = ref(false);
 
-//TODO: active fields array
-
-const sortTableByColumn = (field: string) => {
+const sortTableByColumn = (field: TableHeader) => {
+  if (!field.sortable) {
+    console.warn(`field ${field.id} is not sortable`);
+    return;
+  }
   console.log(field);
   //   if (sort.value === field.id) {
   //     console.log("reverse");
@@ -69,14 +72,6 @@ const sortedTableData = computed(() => {
 const test = (object: any) => {
   return Object.values(object);
 };
-
-const tableFields = [
-  { id: "name", label: "Project name" },
-  { id: "status", label: "Status" },
-  { id: "createdAt", label: "Created At" },
-  { id: "price", label: "Price" },
-  { id: "isContinuous", label: "is Continuous" },
-];
 </script>
 
 <style scoped>
