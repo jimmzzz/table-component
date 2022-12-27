@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>Number of items {{ tableData.length }}</h1>
+    <h1>Number of pages {{ numberOfPages }}</h1>
 
     <table>
       <thead>
@@ -12,8 +13,9 @@
       </thead>
       <tbody>
         <tr v-for="(item, index) in sortedTableData" :key="index">
-          <td v-for="field in test(item)" :key="field">{{ field }}</td>
-          <!-- <td v-for="field in test(item)" :key="field">{{ field }}</td> -->
+          <td v-for="(field, idx) in item" :key="idx">
+            <slot :field="field" :property="idx">{{ field }}</slot>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -29,6 +31,7 @@ const props = defineProps<{
   tableData: TableData[];
 }>();
 
+const ROWS_PER_PAGE = 20;
 const tableData = ref(props.tableData);
 const sort = ref(false);
 
@@ -57,11 +60,11 @@ function compare(a, b, propertyName) {
 }
 
 const sortedTableData = computed(() => {
+  // const x = tableData.value.slice(0, 20);
+
   if (!sort.value) {
     return tableData.value;
   }
-
-  //   const modified = [...tableData.value];
 
   const arrayCopy = [...tableData.value];
   const y = arrayCopy.sort((a, b) => compare(a, b, sort.value));
@@ -69,8 +72,24 @@ const sortedTableData = computed(() => {
   return y;
 });
 
-const test = (object: any) => {
+const numberOfPages = computed(() => {
+  return Math.floor((tableData.value.length + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
+});
+
+const test = (object: TableData) => {
+  // const data = props.headerFields.map((field) => field.id);
+
+  // const x = object[data[index]];
+  // console.log(index);
+
   return Object.values(object);
+};
+
+const prepareObjectForRow = (object: TableData, index: number) => {
+  const data = props.headerFields.map((field) => field.id);
+  // const x = object[data[index]];
+  console.log(object);
+  return object;
 };
 </script>
 

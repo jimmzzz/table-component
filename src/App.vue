@@ -3,19 +3,45 @@ import mockData from './mocks/mock.json';
 import DataTable from './components/DataTable.vue';
 import { TableHeader, TableData } from './components/types';
 
+interface StatusLabels {
+  [key: string]: string;
+}
+
 const tableHeaderFields: TableHeader[] = [
   { id: 'name', label: 'Project name', sortable: true },
-  { id: 'status', label: 'Status' },
+  { id: 'status', label: 'Status', sortable: true },
   { id: 'createdAt', label: 'Created At' },
   { id: 'price', label: 'Price' },
   { id: 'isContinuous', label: 'is Continuous' },
 ];
+
+const statusLabels: StatusLabels = {
+  new: 'light',
+  'in progress': 'info',
+  completed: 'success',
+  rejected: 'danger',
+};
+
+const mapTable = (value: string) => {
+  const labelClass = statusLabels[value.toLowerCase()];
+  return `is-${labelClass}`;
+};
 </script>
 
 <template>
   <div>
-    <h1>Table component</h1>
-    <Data-table :header-fields="tableHeaderFields" :table-data="mockData" />
+    <h1 class="title is-3">Reusable table component</h1>
+    <Data-table v-slot="slotProps" :header-fields="tableHeaderFields" :table-data="mockData">
+      <h3 v-if="slotProps.property === 'name'">{{ slotProps.field }}</h3>
+      <span v-if="slotProps.property === 'status'" class="tag" :class="mapTable(slotProps.field)">
+        {{ slotProps.field }}
+      </span>
+      <span v-if="slotProps.property === 'createdAt'">
+        {{ new Date(slotProps.field).toLocaleDateString() }}
+      </span>
+      <!-- {{ slotProps.property }} -->
+      <!-- <span v-else>{{ slotProps.field }}</span> -->
+    </Data-table>
   </div>
 </template>
 
