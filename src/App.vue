@@ -10,9 +10,9 @@ interface StatusLabels {
 const tableHeaderFields: TableHeader[] = [
   { id: 'name', label: 'Project name', sortable: true },
   { id: 'status', label: 'Status', sortable: true },
-  { id: 'createdAt', label: 'Created At' },
-  { id: 'price', label: 'Price' },
-  { id: 'isContinuous', label: 'is Continuous' },
+  { id: 'createdAt', label: 'Created At', sortable: true },
+  { id: 'price', label: 'Price', sortable: true },
+  { id: 'isContinuous', label: 'is Continuous', sortable: true },
 ];
 
 const statusLabels: StatusLabels = {
@@ -38,6 +38,9 @@ const mapTable = (value: string) => {
       </span>
       <span v-if="slotProps.property === 'createdAt'">
         {{ new Date(slotProps.field).toLocaleDateString() }}
+      </span>
+      <span v-if="slotProps.property === 'price'">
+        {{ new Intl.NumberFormat().format(slotProps.field) }}
       </span>
       <!-- {{ slotProps.property }} -->
       <!-- <span v-else>{{ slotProps.field }}</span> -->
