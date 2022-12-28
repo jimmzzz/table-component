@@ -1,34 +1,44 @@
 <template>
   <div>
-    <h1>Number of items {{ originalTableData.length }}</h1>
-    <h1>Number of pages {{ numberOfPages }}</h1>
-    <pre class="mb-20">
+    <h1>Number of items: {{ originalTableData.length }}</h1>
+    <h1>Number of pages: {{ numberOfPages }}</h1>
+    <p class="mb-5">Number of search results: {{ filteredTableData.length }}</p>
+    <!-- <pre class="mb-20">
       searchTerm {{ searchTerm }}
       sort {{ sort }}
-    </pre>
-    <p class="py-1">Number of filtered data {{ filteredTableData.length }}</p>
+    </pre> -->
 
     <!-- SearchInput -->
     <div class="control my-4">
-      <label class="label" for="search">Search input</label>
-      <input v-model="searchTerm" class="input" type="text" placeholder="Enter search..." />
+      <label class="label" for="search">Table search</label>
+      <input v-model="searchTerm" class="input" type="text" placeholder="Enter search query..." />
     </div>
 
     <!-- TABLE -->
-    <table>
+    <table class="table is-striped is-bordered is-hoverable is-fullwidth">
       <thead>
         <tr>
-          <th v-for="field in props.headerFields" :key="field.id" @click="sortTableByColumn(field)">
+          <th
+            class="py-4 has-background-white-ter has-text-weight-medium"
+            v-for="field in props.headerFields"
+            :key="field.id"
+            @click="sortTableByColumn(field)"
+          >
             {{ field.label }}
             <ToolingIcon v-if="sort[0] === field.id" :style="iconStyle" />
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in sortedTableData" :key="`${item.name}${index}`">
-          <td v-for="(field, idx) in item" :key="`${field}${idx}`">
-            <slot :field="field" :property="idx">{{ field }}</slot>
-          </td>
+        <template v-if="sortedTableData.length">
+          <tr v-for="(item, index) in sortedTableData" :key="`${item.name}${index}`">
+            <td v-for="(field, idx) in item" :key="`${field}${idx}`">
+              <slot :field="field" :property="idx">{{ field }}</slot>
+            </td>
+          </tr>
+        </template>
+        <tr v-else>
+          <td class="has-text-centered" colspan="100%">No matching items. Try change search query</td>
         </tr>
       </tbody>
     </table>
@@ -137,20 +147,19 @@ const numberOfPages = computed(() => {
 </script>
 
 <style scoped>
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
+table,
 td,
 th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
+  /* width: 14.2%; calc TODO: 100% number of columns */
+  /* text-align: center; */
+  /* width: auto; */
+  /* padding: 5px; */
 }
-
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
+/* th {
+  background: #ddeeee;
+} */
+/* table {
+  width: 400px;
+  border-collapse: collapse;
+} */
 </style>

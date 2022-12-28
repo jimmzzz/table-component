@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import mockData from './mocks/mock.json';
 import DataTable from './components/DataTable.vue';
-import { TableHeader, TableData } from './components/types';
+import type { TableHeader } from './components/types';
 
 interface StatusLabels {
   [key: string]: string;
@@ -22,7 +22,7 @@ const statusLabels: StatusLabels = {
   rejected: 'danger',
 };
 
-const mapTable = (value: string) => {
+const addTagClass = (value: string) => {
   const labelClass = statusLabels[value.toLowerCase()];
   return `is-${labelClass}`;
 };
@@ -30,10 +30,11 @@ const mapTable = (value: string) => {
 
 <template>
   <div>
-    <h1 class="title is-3">Reusable table component</h1>
+    <h1 class="title is-3 has-text-weight-bold">Reusable table component</h1>
+
     <Data-table v-slot="slotProps" :header-fields="tableHeaderFields" :table-data="mockData">
       <h3 v-if="slotProps.property === 'name'">{{ slotProps.field }}</h3>
-      <span v-if="slotProps.property === 'status'" class="tag" :class="mapTable(slotProps.field)">
+      <span v-if="slotProps.property === 'status'" class="tag" :class="addTagClass(slotProps.field)">
         {{ slotProps.field }}
       </span>
       <span v-if="slotProps.property === 'createdAt'">
