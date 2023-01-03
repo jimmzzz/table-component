@@ -17,7 +17,7 @@ Reusable component for rendering table data.
 2. Filtering is triggered on every keystroke - potencial problems on large data set
   - debounce could trigger excessive filtering Fn after certain timeout of last key stroke
 3. Limit/Specify fields for full-text search - faster iterating over objects
-4. Date field filtering does not work correctly for formated data and search only for source data in format e.g `2022-07-02T13:40:03.575Z` simple solution would be map data in desired format or complex would need some advanced logic for handling Dates.
+4. Date field filtering does not work correctly for formated data and search only for source data in format e.g `2022-07-02T13:40:03.575Z` simple solution would be map data in desired format or complex would need some advanced logic for handling different Date formats.
 
 ## Used technologies (Tech Stack)
 
