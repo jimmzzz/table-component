@@ -1,45 +1,29 @@
 # Reusable table component
 
-Reusable table component for rendering list of tabular data.
+Reusable component for rendering table data.
 
 ## Features
 
 1. sortable columns (Ascending/descending order) - required
 2. full-text search - required
-3. scoped slots used for customization of specific table fields
+3. scoped slots used for customization/styling of specific table fields
 4. optional default sort for table (props)
+5. "no records found" message if search does not match any data
 
-## Potencial problems/improvments & proposed solutions
+## Potencial problems/improvements & proposed solutions
 1. rendering large data set (number of DOM nodes) - potencial performance problems
-  2. Solution would be to limit number of rendered items - pagination
-  3. List virtualization - [Virtualize Large Lists](https://vuejs.org/guide/best-practices/performance.html#virtualize-large-lists)
+  - Solution would be to limit number of rendered items - pagination
+  - List virtualization - [Virtualize Large Lists](https://vuejs.org/guide/best-practices/performance.html#virtualize-large-lists)
 2. Filtering is triggered on every keystroke - potencial problems on large data set
-   1. debounce could trigger excessive filtering Fn after certain timeout after last key stroke
+  - debounce could trigger excessive filtering Fn after certain timeout of last key stroke
 3. Limit/Specify fields for full-text search - faster iterating over objects
+4. Date field filtering does not work correctly for formated data and search only for source data in format e.g `2022-07-02T13:40:03.575Z` simple solution would be map data in desired format or complex would need some advanced logic for handling Dates.
 
-## Tech Stack
+## Used technologies (Tech Stack)
 
-1. VUE + Typescript (created via CLI)
-2. [Bulma](https://bulma.io/) (CSS framework) 
-
-
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `**vue**-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
-
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
-
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-# Potencial improvments
-
-## Component features
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+1. JS/TS
+2. VUE 3 (project created via VUE CLI)
+3. [Bulma](https://bulma.io/) (CSS framework) 
 
 ## Project Setup
 
