@@ -1,9 +1,14 @@
 <template>
   <div>
     <hr class="my-2" />
+    <!-- For debugging purposes -->
     <div class="is-flex is-justify-content-space-between my-2">
-      <div>Number of items: {{ originalTableData.length }}</div>
-      <div>Number of search results: {{ filteredTableData.length }}</div>
+      <div>
+        Number of items: <strong>{{ originalTableData.length }}</strong>
+      </div>
+      <div>
+        Number of search results: <strong>{{ filteredTableData.length }}</strong>
+      </div>
       <div>
         sortOrder: <strong>{{ sortOrder }}</strong>
       </div>
@@ -32,7 +37,7 @@
               @click="sortTableByColumnClick(field)"
             >
               {{ field.label }}
-              <ToolingIcon v-if="sortByField === field.id" :style="iconStyle" />
+              <icon-arrow v-if="sortByField === field.id" :style="iconStyle" />
             </th>
           </tr>
         </thead>
@@ -57,7 +62,7 @@
 import { computed, ref, defineProps, watch, shallowRef } from 'vue';
 import type { TableData, TableHeader, SortOptions } from './types';
 import { SortOrder } from './types';
-import ToolingIcon from './icons/IconTooling.vue';
+import iconArrow from './icons/IconArrow.vue';
 
 const props = defineProps<{
   headerFields: TableHeader[];
@@ -108,18 +113,13 @@ const compare = (a: TableData, b: TableData, propertyName: string) => {
 };
 
 const sortedTableData = computed(() => {
-  let arrayCopy = [...(filteredTableData.value.length ? filteredTableData.value : originalTableData.value)];
+  let tableData = [
+    ...(filteredTableData.value.length || searchTerm.value ? filteredTableData.value : originalTableData.value),
+  ];
 
-  const sortType = sortOrder;
-  let result = [];
-
-  if (!sortType.value || sortType.value === SortOrder.ASCENDING) {
-    result = arrayCopy.sort((a, b) => compare(a, b, String(sortByField.value)));
-  } else {
-    result = arrayCopy.sort((a, b) => compare(b, a, String(sortByField.value)));
-  }
-
-  return result;
+  return !sortOrder.value || sortOrder.value === SortOrder.ASCENDING
+    ? tableData.sort((a, b) => compare(a, b, String(sortByField.value)))
+    : tableData.sort((a, b) => compare(b, a, String(sortByField.value)));
 });
 
 const iconStyle = computed(() => {
