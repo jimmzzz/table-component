@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import mockData from './mocks/mock.json';
 import DataTable from './components/DataTable.vue';
-import type { TableHeader } from './components/types';
+import type { TableHeader, SortOptions } from './components/types';
+import { SortOrder } from './components/types';
 
 interface StatusLabels {
   [key: string]: string;
@@ -14,6 +15,8 @@ const tableHeaderFields: TableHeader[] = [
   { id: 'price', label: 'Price', sortable: true },
   { id: 'isContinuous', label: 'is Continuous', sortable: true },
 ];
+
+const sortOptions: SortOptions = [SortOrder.ASCENDING, 'name'];
 
 const statusLabels: StatusLabels = {
   new: 'light',
@@ -32,7 +35,12 @@ const addTagClass = (value: string) => {
   <div>
     <h1 class="title is-3 has-text-weight-bold">Reusable table component</h1>
 
-    <Data-table v-slot="slotProps" :header-fields="tableHeaderFields" :table-data="mockData">
+    <Data-table
+      v-slot="slotProps"
+      :header-fields="tableHeaderFields"
+      :table-data="mockData"
+      :default-sort="sortOptions"
+    >
       <h3 v-if="slotProps.property === 'name'">{{ slotProps.field }}</h3>
       <span v-if="slotProps.property === 'status'" class="tag" :class="addTagClass(slotProps.field)">
         {{ slotProps.field }}

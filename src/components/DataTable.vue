@@ -6,10 +6,10 @@
     <div class="mb-3">Number of search results: {{ filteredTableData.length }}</div>
     <hr class="my-2" />
 
-    <!-- <pre class="mb-20">
-      searchTerm {{ searchTerm }}
-      sort {{ sort }}
-    </pre> -->
+    <pre class="mb-20">
+      SortOrder {{ sortOrder }}
+      sortByField {{ sortByField }}
+    </pre>
 
     <!-- SearchInput -->
     <div class="control my-4">
@@ -30,7 +30,7 @@
               @click="sortTableByColumn(field)"
             >
               {{ field.label }}
-              <ToolingIcon v-if="sort[0] === field.id" :style="iconStyle" />
+              <ToolingIcon v-if="sortByField === field.id" :style="iconStyle" />
             </th>
           </tr>
         </thead>
@@ -52,25 +52,23 @@
 </template>
 
 <script setup lang="ts">
-import type { TableData, TableHeader } from './types';
 import { computed, ref, defineProps, watch, shallowRef } from 'vue';
+import type { TableData, TableHeader, SortOptions } from './types';
+import { SortOrder } from './types';
 import ToolingIcon from './icons/IconTooling.vue';
-
-enum SortOrder {
-  ASCENDING = 'asc',
-  DESCENDING = 'dsc',
-}
 
 const props = defineProps<{
   headerFields: TableHeader[];
   tableData: TableData[];
+  defaultSort?: SortOptions;
 }>();
 
 const ROWS_PER_PAGE = 20;
 
 const originalTableData = shallowRef<TableData[]>(props.tableData);
 const filteredTableData = shallowRef<TableData[]>([]);
-const sort = ref<String[]>([]);
+const sortOrder = ref(props?.defaultSort?.length === 2 ? props?.defaultSort[0] : '');
+const sortByField = ref(props?.defaultSort?.length === 2 ? props?.defaultSort[1] : '');
 const searchTerm = ref('');
 
 // const filterItems = (event: Event) => {
@@ -109,7 +107,9 @@ const sortTableByColumn = (field: TableHeader) => {
     return;
   }
 
-  sort.value = [field.id, sort.value[1] === SortOrder.ASCENDING ? SortOrder.DESCENDING : SortOrder.ASCENDING];
+  const sort = sortOrder.value === SortOrder.ASCENDING ? SortOrder.DESCENDING : SortOrder.ASCENDING;
+  sortOrder.value = sort;
+  sortByField.value = field.id;
   filteredTableData.value = [...sortedTableData.value];
 };
 
@@ -124,18 +124,15 @@ const compare = (a: TableData, b: TableData, propertyName: string) => {
 };
 
 const sortedTableData = computed(() => {
-  if (!searchTerm.value && !filteredTableData.value.length) {
-    return originalTableData.value;
-  }
+  let arrayCopy = [...(filteredTableData.value.length ? filteredTableData.value : originalTableData.value)];
 
-  const sortType = sort.value[1];
-  const arrayCopy = [...filteredTableData.value];
+  const sortType = sortOrder;
   let result = [];
 
-  if (!sortType || sortType === SortOrder.ASCENDING) {
-    result = arrayCopy.sort((a, b) => compare(a, b, String(sort.value[0])));
+  if (!sortType.value || sortType.value === SortOrder.ASCENDING) {
+    result = arrayCopy.sort((a, b) => compare(a, b, String(sortByField.value)));
   } else {
-    result = arrayCopy.sort((a, b) => compare(b, a, String(sort.value[0])));
+    result = arrayCopy.sort((a, b) => compare(b, a, String(sortByField.value)));
   }
 
   return result;
@@ -143,7 +140,7 @@ const sortedTableData = computed(() => {
 
 const iconStyle = computed(() => {
   return {
-    transform: sort.value[1] === SortOrder.DESCENDING ? 'rotate(180deg)' : 'rotate(0deg)',
+    transform: sortOrder.value === SortOrder.DESCENDING ? 'rotate(180deg)' : 'rotate(0deg)',
   };
 });
 
