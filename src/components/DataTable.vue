@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineProps, watch, shallowRef } from 'vue';
+import { computed, ref, watch, shallowRef } from 'vue';
 import type { TableData, TableHeader, SortOptions } from './types';
 import { SortOrder } from './types';
 import iconArrow from './icons/IconArrow.vue';
