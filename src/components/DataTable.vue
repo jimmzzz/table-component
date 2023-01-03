@@ -1,8 +1,11 @@
 <template>
   <div>
-    <h1>Number of items: {{ originalTableData.length }}</h1>
-    <h1>Number of pages: {{ numberOfPages }}</h1>
-    <p class="mb-5">Number of search results: {{ filteredTableData.length }}</p>
+    <hr class="my-2" />
+    <div>Number of items: {{ originalTableData.length }}</div>
+    <div>Number of pages: {{ numberOfPages }}</div>
+    <div class="mb-3">Number of search results: {{ filteredTableData.length }}</div>
+    <hr class="my-2" />
+
     <!-- <pre class="mb-20">
       searchTerm {{ searchTerm }}
       sort {{ sort }}
@@ -15,39 +18,42 @@
     </div>
 
     <!-- TABLE -->
-    <table class="table is-striped is-bordered is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th
-            class="py-4 has-background-white-ter has-text-weight-medium"
-            v-for="field in props.headerFields"
-            :key="field.id"
-            @click="sortTableByColumn(field)"
-          >
-            {{ field.label }}
-            <ToolingIcon v-if="sort[0] === field.id" :style="iconStyle" />
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-if="sortedTableData.length">
-          <tr v-for="(item, index) in sortedTableData" :key="`${item.name}${index}`">
-            <td v-for="(field, idx) in item" :key="`${field}${idx}`">
-              <slot :field="field" :property="idx">{{ field }}</slot>
-            </td>
+    <div class="table-container">
+      <table class="table is-striped is-bordered is-hoverable is-fullwidth">
+        <thead>
+          <tr>
+            <th
+              :class="{ 'is-clickable': field.sortable }"
+              class="py-4 has-background-white-ter has-text-weight-medium"
+              v-for="field in props.headerFields"
+              :key="field.id"
+              @click="sortTableByColumn(field)"
+            >
+              {{ field.label }}
+              <ToolingIcon v-if="sort[0] === field.id" :style="iconStyle" />
+            </th>
           </tr>
-        </template>
-        <tr v-else>
-          <td class="has-text-centered" colspan="100%">No matching items. Try change search query</td>
-        </tr>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <template v-if="sortedTableData.length">
+            <tr v-for="(item, index) in sortedTableData" :key="`${item.name}${index}`" v-memo="[item.name]">
+              <td v-for="(field, idx) in item" :key="`${field}${idx}`">
+                <slot :field="field" :property="idx">{{ field }}</slot>
+              </td>
+            </tr>
+          </template>
+          <tr v-else>
+            <td class="has-text-centered" colspan="100%">No matching items. Try change search query</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { TableData, TableHeader } from './types';
-import { computed, ref, defineProps, watch } from 'vue';
+import { computed, ref, defineProps, watch, shallowRef } from 'vue';
 import ToolingIcon from './icons/IconTooling.vue';
 
 enum SortOrder {
@@ -62,8 +68,8 @@ const props = defineProps<{
 
 const ROWS_PER_PAGE = 20;
 
-const originalTableData = ref<TableData[]>(props.tableData);
-const filteredTableData = ref<TableData[]>([]);
+const originalTableData = shallowRef<TableData[]>(props.tableData);
+const filteredTableData = shallowRef<TableData[]>([]);
 const sort = ref<String[]>([]);
 const searchTerm = ref('');
 
