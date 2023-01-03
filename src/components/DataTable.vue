@@ -1,15 +1,17 @@
 <template>
   <div>
     <hr class="my-2" />
-    <div>Number of items: {{ originalTableData.length }}</div>
-    <div>Number of pages: {{ numberOfPages }}</div>
-    <div class="mb-3">Number of search results: {{ filteredTableData.length }}</div>
+    <div class="is-flex is-justify-content-space-between my-2">
+      <div>Number of items: {{ originalTableData.length }}</div>
+      <div>Number of search results: {{ filteredTableData.length }}</div>
+      <div>
+        sortOrder: <strong>{{ sortOrder }}</strong>
+      </div>
+      <div>
+        sortByField: <strong>{{ sortByField }}</strong>
+      </div>
+    </div>
     <hr class="my-2" />
-
-    <pre class="mb-20">
-      SortOrder {{ sortOrder }}
-      sortByField {{ sortByField }}
-    </pre>
 
     <!-- SearchInput -->
     <div class="control my-4">
@@ -27,7 +29,7 @@
               class="py-4 has-background-white-ter has-text-weight-medium"
               v-for="field in props.headerFields"
               :key="field.id"
-              @click="sortTableByColumn(field)"
+              @click="sortTableByColumnClick(field)"
             >
               {{ field.label }}
               <ToolingIcon v-if="sortByField === field.id" :style="iconStyle" />
@@ -63,27 +65,11 @@ const props = defineProps<{
   defaultSort?: SortOptions;
 }>();
 
-const ROWS_PER_PAGE = 20;
-
 const originalTableData = shallowRef<TableData[]>(props.tableData);
 const filteredTableData = shallowRef<TableData[]>([]);
 const sortOrder = ref(props?.defaultSort?.length === 2 ? props?.defaultSort[0] : '');
 const sortByField = ref(props?.defaultSort?.length === 2 ? props?.defaultSort[1] : '');
 const searchTerm = ref('');
-
-// const filterItems = (event: Event) => {
-//   searchTerm.value = event.target?.value;
-
-//   if (!searchTerm.value) {
-//     console.log('called here why?');
-//     return tableData.value;
-//   }
-
-//   tableData.value = tableData.value.filter((item) =>
-//     String(item.price).toLowerCase().includes(searchTerm.value.toLowerCase())
-//   );
-//   console.log('tableData', tableData.value);
-// };
 
 watch(searchTerm, (searchInput) => {
   if (!searchInput) {
@@ -91,26 +77,24 @@ watch(searchTerm, (searchInput) => {
     return;
   }
 
-  filteredTableData.value = [...filterList(searchInput, originalTableData.value)];
+  filteredTableData.value = filterTableData(searchInput, originalTableData.value);
 });
 
-const filterList = (input: string, list: TableData[]) => {
+const filterTableData = (input: string, tableData: TableData[]) => {
   const proccesedInput = input.trim().toLowerCase();
-  return list.filter((item) => {
+  return tableData.filter((item) => {
     return Object.values(item).some((el) => String(el).toLowerCase().trim().includes(proccesedInput));
   });
 };
 
-const sortTableByColumn = (field: TableHeader) => {
+const sortTableByColumnClick = (field: TableHeader) => {
   if (!field.sortable) {
     console.warn(`field ${field.id} is not sortable`);
     return;
   }
 
-  const sort = sortOrder.value === SortOrder.ASCENDING ? SortOrder.DESCENDING : SortOrder.ASCENDING;
-  sortOrder.value = sort;
+  sortOrder.value = sortOrder.value === SortOrder.ASCENDING ? SortOrder.DESCENDING : SortOrder.ASCENDING;
   sortByField.value = field.id;
-  filteredTableData.value = [...sortedTableData.value];
 };
 
 const compare = (a: TableData, b: TableData, propertyName: string) => {
@@ -144,25 +128,8 @@ const iconStyle = computed(() => {
   };
 });
 
-const numberOfPages = computed(() => {
-  return Math.floor((originalTableData.value.length + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
-});
+// const numberOfPages = computed(() => {
+//  const ROWS_PER_PAGE = 20;
+//   return Math.floor((originalTableData.value.length + ROWS_PER_PAGE - 1) / ROWS_PER_PAGE);
+// });
 </script>
-
-<style scoped>
-table,
-td,
-th {
-  /* width: 14.2%; calc TODO: 100% number of columns */
-  /* text-align: center; */
-  /* width: auto; */
-  /* padding: 5px; */
-}
-/* th {
-  background: #ddeeee;
-} */
-/* table {
-  width: 400px;
-  border-collapse: collapse;
-} */
-</style>
